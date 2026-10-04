@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Los Olivares | Sistema de Costos</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+<div id="app">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"><i class="ti ti-building-factory-2"></i></div>
+    <div><div class="logo-text">Los Olivares</div><div class="logo-sub">SISTEMA DE COSTOS</div></div>
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-label">Proyecto final</div>
+      <div class="nav-item active" onclick="nav('dashboard',this)">
+        <i class="ti ti-layout-dashboard"></i>Dashboard
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Modelo dinámico</div>
+      <div class="nav-item" onclick="nav('input',this)">
+        <i class="ti ti-adjustments"></i>1. Input de Datos
+      </div>
+      <div class="nav-item" onclick="nav('motor',this)">
+        <i class="ti ti-calculator"></i>2. Motor de Cálculo
+      </div>
+      <div class="nav-item" onclick="nav('dashboard',this)">
+        <i class="ti ti-chart-bar"></i>3. Dashboard
+      </div>
+      <div class="nav-item" onclick="nav('whatif',this)">
+        <i class="ti ti-flask"></i>4. Simulación What-If
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Información</div>
+      <div class="nav-item" onclick="mostrarMetodologia()">
+        <i class="ti ti-info-circle"></i>Metodología
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="footer-name">Proyecto Final</div>
+    <div class="footer-company">Contabilidad II · 2026</div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard de Costos</div>
+    <div class="topbar-status"><span class="dot"></span> Modelo dinámico activo</div>
+    <button class="btn-outline" onclick="restaurarDatos()"><i class="ti ti-refresh"></i>Restablecer</button>
+  </header>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-intro">
+        <div>
+          <h1>Dashboard de Costos y Margen de Contribución</h1>
+          <p>Comparación dinámica entre Costeo Absorbente y Costeo Directo.</p>
+        </div>
+        <span class="badge blue">Modelo operativo</span>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label"><i class="ti ti-cash"></i>Ventas totales</div><div class="kpi-val blue" id="kpi-ventas">Q 0.00</div><div class="kpi-change">Unidades vendidas × precio</div></div>
+        <div class="kpi"><div class="kpi-label"><i class="ti ti-chart-donut"></i>Margen de contribución</div><div class="kpi-val green" id="kpi-mc">Q 0.00</div><div class="kpi-change" id="kpi-mc-pct">0.00%</div></div>
+        <div class="kpi"><div class="kpi-label"><i class="ti ti-calculator"></i>Utilidad absorbente</div><div class="kpi-val" id="kpi-abs">Q 0.00</div><div class="kpi-change">Costeo absorbente</div></div>
+        <div class="kpi"><div class="kpi-label"><i class="ti ti-scale"></i>Utilidad directa</div><div class="kpi-val" id="kpi-dir">Q 0.00</div><div class="kpi-change">Costeo directo</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><h3>Comparación de utilidad</h3><span class="card-sub">Q</span></div>
+          <div class="card-body">
+            <div class="compare-row"><div class="compare-label">Absorbente <strong id="bar-abs-label">Q 0.00</strong></div><div class="track"><div class="fill absorbente" id="bar-abs"></div></div></div>
+            <div class="compare-row"><div class="compare-label">Directo <strong id="bar-dir-label">Q 0.00</strong></div><div class="track"><div class="fill directo" id="bar-dir"></div></div></div>
+            <div class="mini-note" id="diferencia-note">Diferencia: Q 0.00</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Costos fijos vs. variables</h3><span class="card-sub">Periodo actual</span></div>
+          <div class="card-body">
+            <div class="donut-legend">
+              <div class="cost-box"><span class="legend-dot variable"></span><div><b id="dash-var">Q 0.00</b><small>Costos variables</small></div></div>
+              <div class="cost-box"><span class="legend-dot fijo"></span><div><b id="dash-fijo">Q 0.00</b><small>Costos fijos</small></div></div>
+            </div>
+            <div class="stacked"><div id="stack-var" class="stack-var"></div><div id="stack-fijo" class="stack-fijo"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><h3>Indicadores de producción</h3></div>
+          <div class="card-body">
+            <div class="metric-list">
+              <div><span>Capacidad normal</span><strong id="m-capacidad">0</strong></div>
+              <div><span>Producción real</span><strong id="m-produccion">0</strong></div>
+              <div><span>Ventas</span><strong id="m-ventas-unidades">0</strong></div>
+              <div><span>Inventario final</span><strong id="m-inventario">0</strong></div>
+              <div><span>Utilización de capacidad</span><strong id="m-utilizacion">0%</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Alertas del modelo</h3></div>
+          <div class="card-body" id="dashboard-alertas"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INPUT -->
+    <section class="page" id="page-input">
+      <div class="page-intro">
+        <div><h1>1. Input de Datos</h1><p>Modifica los parámetros y todo el modelo se recalculará automáticamente.</p></div>
+      </div>
+
+      <div class="alert info"><i class="ti ti-info-circle"></i>Los valores introducidos aquí alimentan el Motor de Cálculo, el Dashboard y la simulación What-If.</div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><h3>Volumen operativo</h3><span class="badge blue">Unidades</span></div>
+          <div class="card-body form-grid">
+            <div class="form-row"><label>Capacidad Normal</label><input id="capacidadNormal" type="number" min="0" step="1"></div>
+            <div class="form-row"><label>Producción Real</label><input id="produccionReal" type="number" min="0" step="1"></div>
+            <div class="form-row"><label>Ventas (Unidades)</label><input id="ventasUnidades" type="number" min="0" step="1"></div>
+            <div class="form-row"><label>Precio de Venta Unitario</label><input id="precioVenta" type="number" min="0" step="0.01"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Costos variables unitarios</h3><span class="badge green">Por unidad</span></div>
+          <div class="card-body form-grid">
+            <div class="form-row"><label>Materia Prima</label><input id="materiaPrima" type="number" min="0" step="0.01"></div>
+            <div class="form-row"><label>Mano de Obra</label><input id="manoObra" type="number" min="0" step="0.01"></div>
+            <div class="form-row"><label>GIF Variables</label><input id="gifVariables" type="number" min="0" step="0.01"></div>
+            <div class="form-row"><label>Gastos de Venta Variables</label><input id="gastoVentaVariable" type="number" min="0" step="0.01"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Costos fijos totales</h3><span class="badge amber">Periodo</span></div>
+        <div class="card-body form-grid three">
+          <div class="form-row"><label>Costos Fijos de Producción</label><input id="fijoProduccion" type="number" min="0" step="0.01"></div>
+          <div class="form-row"><label>Costos Fijos de Administración</label><input id="fijoAdministracion" type="number" min="0" step="0.01"></div>
+          <div class="form-row"><label>Periodo</label><input id="periodo" type="text" value="Octubre 2026"></div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-primary" onclick="actualizarModelo()"><i class="ti ti-calculator"></i>Actualizar modelo</button>
+        <button class="btn-outline" onclick="nav('motor',document.querySelector('.nav-item:nth-of-type(3)'))"><i class="ti ti-arrow-right"></i>Ver cálculos</button>
+      </div>
+    </section>
+
+    <!-- MOTOR -->
+    <section class="page" id="page-motor">
+      <div class="page-intro">
+        <div><h1>2. Motor de Cálculo Automatizado</h1><p>Fórmulas dinámicas derivadas de los parámetros operativos.</p></div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Costo variable manufactura / unidad</div><div class="kpi-val" id="motor-cvu">Q 0.00</div></div>
+        <div class="kpi"><div class="kpi-label">Tasa fija / unidad</div><div class="kpi-val blue" id="motor-tasa">Q 0.00</div></div>
+        <div class="kpi"><div class="kpi-label">Variación de capacidad</div><div class="kpi-val" id="motor-var-cap">Q 0.00</div></div>
+        <div class="kpi"><div class="kpi-label">Inventario final</div><div class="kpi-val" id="motor-inv">0</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Resumen del cálculo</h3></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Concepto</th><th class="text-right">Resultado</th></tr></thead>
+            <tbody id="motor-resumen"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><h3>Estado de Resultados — Costeo Absorbente</h3><span class="badge blue">Absorbente</span></div>
+          <div class="card-body">
+            <table class="statement" id="estado-abs"></table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Estado de Resultados — Costeo Directo</h3><span class="badge green">Directo</span></div>
+          <div class="card-body">
+            <table class="statement" id="estado-dir"></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Módulo de Reconciliación</h3><span class="badge amber">Comprobación</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Concepto</th><th class="text-right">Valor</th></tr></thead>
+            <tbody id="reconciliacion"></tbody>
+          </table>
+          <div id="reconciliacion-status" class="reconcile-ok"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT IF -->
+    <section class="page" id="page-whatif">
+      <div class="page-intro">
+        <div><h1>4. Simulación / What-If</h1><p>Análisis de sensibilidad para evaluar cambios en producción y ventas.</p></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Escenario de sensibilidad</h3><span class="badge blue">What-If</span></div>
+        <div class="card-body">
+          <div class="two-col">
+            <div class="form-row">
+              <label>Variación de producción (%)</label>
+              <input id="whatProduccion" type="number" value="20" step="1" oninput="simularWhatIf()">
+              <small>Ejemplo del proyecto: +20%</small>
+            </div>
+            <div class="form-row">
+              <label>Variación de ventas (%)</label>
+              <input id="whatVentas" type="number" value="0" step="1" oninput="simularWhatIf()">
+              <small>Déjalo en 0% para mantener las ventas constantes.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Producción simulada</div><div class="kpi-val blue" id="what-prod">0</div></div>
+        <div class="kpi"><div class="kpi-label">Ventas simuladas</div><div class="kpi-val" id="what-ventas">0</div></div>
+        <div class="kpi"><div class="kpi-label">Utilidad absorbente simulada</div><div class="kpi-val" id="what-abs">Q 0.00</div></div>
+        <div class="kpi"><div class="kpi-label">Cambio de utilidad</div><div class="kpi-val green" id="what-cambio">Q 0.00</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><h3>Escenario actual vs. simulado</h3></div>
+          <div class="card-body">
+            <table>
+              <thead><tr><th>Indicador</th><th class="text-right">Actual</th><th class="text-right">Simulado</th></tr></thead>
+              <tbody id="what-tabla"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Interpretación automática</h3></div>
+          <div class="card-body" id="what-mensaje"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+</div>
+
+<div id="toast"></div>
+
+<div class="modal-backdrop" id="modal-metodologia" onclick="if(event.target===this)closeModal('modal-metodologia')">
+  <div class="modal wide">
+    <div class="modal-head"><h3>Metodología del modelo</h3><button class="close-btn" onclick="closeModal('modal-metodologia')">×</button></div>
+    <p class="modal-text">El sistema toma los parámetros de producción, ventas, precio y costos. Con ellos calcula automáticamente el costo variable unitario de manufactura, la tasa fija por unidad, el costo unitario absorbente, el margen de contribución y la utilidad bajo Costeo Absorbente y Costeo Directo.</p>
+    <p class="modal-text"><b>Reconciliación:</b> con inventario inicial igual a cero, la diferencia de utilidades se comprueba mediante el inventario final multiplicado por la tasa fija.</p>
+    <p class="modal-text"><b>What-If:</b> permite modificar producción y ventas para observar el efecto sobre inventario y utilidad.</p>
+    <button class="btn-primary" onclick="closeModal('modal-metodologia')">Cerrar</button>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
